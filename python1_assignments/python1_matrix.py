@@ -76,7 +76,29 @@ class Matrix:
         elif m == 2:
             result = self[0][0] * self[1][1] - self[0][1] * self[1][0]
             return result    
+        elif m == 1:
+            return self[0][0]
         return self.determ       
+    #Multiply matrix with a number
+    def multiply_num(self, number):
+        m, n = self.get_shape()
+        matrix_copy = Matrix([[0 for i in range(n)] for j in range(m)])
+        for i in range(m):
+            for j in range(n):
+                matrix_copy[i][j] = self[i][j] * number
+        return matrix_copy
+    #Return the reverse of a matrix
+    def get_reverse(self):
+        m, n = self.get_shape()
+        #calculate the Adjugate matrix of self
+        matrix_adjugate = Matrix([[0 for i in range(n)] for j in range(m)])
+        for i in range(m):
+            for j in range(n):
+                matrix_adjugate[i][j] = (-1) ** (i + j) * self.get_remainder(i + 1, j + 1).get_determ()
+        matrix_adjugate = matrix_adjugate.get_trans()
+        self.determ = float(self.get_determ())
+        result = matrix_adjugate.multiply_num(1.0 / self.determ)
+        return result
     #Matrix multiply function
     def multiply_matrix(self, matrix2):
         m, n = self.get_shape()
@@ -115,7 +137,11 @@ class TestMatrixFunc(unittest.TestCase):
         self.assertEqual(46, Matrix([[3, 2, 4], [3, 5, 2], [2, 4, 6]]).get_determ())
         self.assertEqual(330, Matrix([[2, 2, 2, 2], [5, 2, 7, 8], [9, 10, 2, 12], [13, 14, 15, 19]]).get_determ())
         self.assertEqual(-96456, Matrix([[2, 2, 2, 2, 8], [5, 2, 7, 8, 100], [9, 10, 2, 12, 11], [13, 14, 15, 19, 10], [10, 2, 3, 4, 1]]).get_determ())
-
+    #Test reverse
+    def test_matrix_reverse(self):
+        self.assertEqual(Matrix([[1, 0], [0, 1]]), Matrix([[1, 0], [0, 1]]).get_reverse())
+        self.assertEqual(Matrix([[-1, 1], [1, -0.5]]), Matrix([[1, 2], [2, 2]]).get_reverse())
+        
     
 if __name__ == '__main__':
     try:
